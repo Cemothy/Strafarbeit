@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -g -pthread
 RM = rm -f
-OBJECTS = BinaryTree.o
-SOURCE = $(OBJECTS:.o=.c) $(OBJECTS:.o=.h)
+OBJECTS = BinaryTreeAdvanced.o
+SOURCE = $(OBJECTS:.o=.c)
 TARGET = $(OBJECTS:.o=)
 
 .PHONY: all clean

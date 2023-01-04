@@ -1,7 +1,7 @@
 // Tree traversal in C
 // Datastruct from: https://www.scaler.com/topics/binary-tree-in-c/
 
-#include "BinaryTree.h"
+#include "BinaryTreeAdvanced.h"
 
 // Inorder traversal
 void inorderTraversal(struct node *root)
@@ -30,6 +30,7 @@ void postorderTraversal(struct node *root)
     return;
   postorderTraversal(root->left);
   postorderTraversal(root->right);
+
   printf("%d ", root->item);
 }
 
@@ -40,6 +41,7 @@ struct node *create(int value)
   newNode->item = value;
   newNode->left = NULL;
   newNode->right = NULL;
+  assert(pthread_mutex_init(&newNode->lock, NULL) == 0);
 
   return newNode;
 }
@@ -56,13 +58,13 @@ void free_all_nodes(struct node *root)
 binarytree *create_binary(binarytree *b)
 {
   b->root = create(0);
-  assert(pthread_mutex_init(&b->lock, NULL) == 0);
+  //Removed Global Lock Init
   return b;
 }
 
 void insert(binarytree *b, int value)
 {
-  pthread_mutex_lock(&b->lock);
+
   insertR(b->root, value);
   pthread_mutex_unlock(&b->lock);
 }
@@ -77,20 +79,25 @@ void insert(binarytree *b, int value)
 
 node *insertR(node *p, int item)
 {
-  if (p == NULL)
-  {
-    create(item);
-  }
-  else if (item > p->item)
-  {
-    p->right = insertR(p->right, item);
-  }
-  else if (item < p->item)
-  {
-    p->left = insertR(p->left, item);
-  }
+    pthread_mutex_lock(&p->lock);
+    if (p == NULL)
+    {
+        create(item);
+        pthread_mutex_unlock(&p->lock);
 
-  return p;
+    }
+    else if (item > p->item)
+    {
+        pthread_mutex_unlock(&p->lock);
+        p->right = insertR(p->right, item);
+    }
+    else if (item < p->item)
+    {
+        pthread_mutex_unlock(&p->lock);
+        p->left = insertR(p->left, item);
+    }
+
+    return p;
 }
 /**
  * @brief
@@ -187,11 +194,11 @@ int main(int argc, char **argv)
 
   // Argumente für Worker in Struct einfügen
   myargs args[threads];
-  args[i].b = b;
 
-  args.n = number;
+
 for(int i = 0; i < threads; i++)
 {
+  args[i].b = b;
   args[i].numbers = numbers;
   args[i].a = (number / threads) * i;
   args[i].n = (number / threads) * (i + 1);
