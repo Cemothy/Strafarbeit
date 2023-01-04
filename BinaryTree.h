@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
 
 
 struct node {
@@ -22,6 +22,7 @@ typedef struct {
 typedef struct {
     binarytree *b;
     int *numbers;
+    int a;
     int n;
 } myargs;
 

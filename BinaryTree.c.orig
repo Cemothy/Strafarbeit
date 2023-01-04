@@ -187,11 +187,11 @@ int main(int argc, char **argv)
 
   // Argumente für Worker in Struct einfügen
   myargs args[threads];
+  args[i].b = b;
 
-
+  args.n = number;
 for(int i = 0; i < threads; i++)
 {
-  args[i].b = b;
   args[i].numbers = numbers;
   args[i].a = (number / threads) * i;
   args[i].n = (number / threads) * (i + 1);
