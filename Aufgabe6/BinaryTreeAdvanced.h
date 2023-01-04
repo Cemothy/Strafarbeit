@@ -10,6 +10,7 @@ struct node {
     int item;
     struct node* left;
     struct node* right;
+    pthread_mutex_t lock;
 };
 
 typedef struct node node;
@@ -24,7 +25,6 @@ typedef struct {
     int *numbers;
     int a;
     int n;
-    pthread_mutex_t lock;
 } myargs;
 
 void inorderTraversal(struct node* root);

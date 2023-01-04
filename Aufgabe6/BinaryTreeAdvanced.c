@@ -53,6 +53,7 @@ void free_all_nodes(struct node *root)
   free_all_nodes(root->left);
   free_all_nodes(root->right);
   free(root);
+  pthread_mutex_destroy(&root->lock);
 }
 
 binarytree *create_binary(binarytree *b)
@@ -66,7 +67,7 @@ void insert(binarytree *b, int value)
 {
 
   insertR(b->root, value);
-  pthread_mutex_unlock(&b->lock);
+
 }
 
 /**
@@ -83,7 +84,7 @@ node *insertR(node *p, int item)
     if (p == NULL)
     {
         create(item);
-        pthread_mutex_unlock(&p->lock);
+
 
     }
     else if (item > p->item)
@@ -97,6 +98,7 @@ node *insertR(node *p, int item)
         p->left = insertR(p->left, item);
     }
 
+    pthread_mutex_unlock(&p->lock);
     return p;
 }
 /**
@@ -228,7 +230,7 @@ for(int i = 0; i < threads; i++)
   printf("Elapsed Time: %f ms.\n", time);
 
   // free lock, array, nodes and tree
-  pthread_mutex_destroy(&b->lock);
+
   free(numbers);
   free_all_nodes(b->root);
   free(b);
