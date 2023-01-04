@@ -1,91 +1,87 @@
-#include<stdio.h>
-#include<stdlib.h>
+// Tree traversal in C
+//Datastruct from: https://www.scaler.com/topics/binary-tree-in-c/
 
-//https://techvidvan.com/tutorials/binary-tree-in-c/
-struct node
-{
-int value;
-struct node *left_child, *right_child;
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+struct node {
+  int item;
+  struct node* left;
+  struct node* right;
 };
 
-struct node *new_node(int value)
-{
-struct node *tmp = (struct node *)malloc(sizeof(struct node));
-tmp->value = value;
-tmp->left_child = tmp->right_child = NULL;
-return tmp;
+typedef struct node node;
+
+struct binarytree {
+    node root;
+    pthread_mutex_t* lock;
+};
+
+// Inorder traversal
+void inorderTraversal(struct node* root) {
+  if (root == NULL) return;
+  inorderTraversal(root->left);
+  printf("%d ", root->item);
+  inorderTraversal(root->right);
 }
 
-void print(struct node *root_node) // displaying the nodes!
-{
-if (root_node != NULL)
-{
-print(root_node->left_child);
-printf("%d \n", root_node->value);
-print(root_node->right_child);
-}
+// Preorder traversal
+void preorderTraversal(struct node* root) {
+  if (root == NULL) return;
+  printf("%d ", root->item);
+  preorderTraversal(root->left);
+  preorderTraversal(root->right);
 }
 
-struct node* insert_node(struct node* node, int value) // inserting nodes!
-{
-
-if (node == NULL) return new_node(value);
-if (value < node->value)
-{
-node->left_child = insert_node(node->left_child, value);
-}
-else if (value > node->value)
-{
-node->right_child = insert_node(node->right_child, value);
-}
-return node;
+// Postorder traversal
+void postorderTraversal(struct node* root) {
+  if (root == NULL) return;
+  postorderTraversal(root->left);
+  postorderTraversal(root->right);
+  printf("%d ", root->item);
 }
 
-void insert_worker(struct node* node, char* argv[])
-{
+// Create a new Node
+struct node* create(int value) {
+  struct node* newNode = malloc(sizeof(struct node));
+  newNode->item = value;
+  newNode->left = NULL;
+  newNode->right = NULL;
 
-    for(int i = 0; i < sizeof(argv) / sizeof(argv[0]);  i++)
-    {
-    insert_node(node, argv[i])
-    }
-
+  return newNode;
 }
 
+// Insert on the left of the node
+struct node* insertLeft(struct node* root, int value) {
+  root->left = create(value);
+  return root->left;
+}
+
+// Insert on the right of the node
+struct node* insertRight(struct node* root, int value) {
+  root->right = create(value);
+  return root->right;
+}
+
+int main() {
+  struct node* root = create(1);
+  insertLeft(root, 4);
+  insertRight(root, 6);
+  insertLeft(root->left, 42);
+  insertRight(root->left, 3);
+  insertLeft(root->right, 2);
+  insertRight(root->right, 33);
+
+  printf("Traversal of the inserted binary tree \n");
+  printf("Inorder traversal \n");
+  inorderTraversal(root);
+
+  printf("\nPreorder traversal \n");
+  preorderTraversal(root);
 
 
+  printf("\nPostorder traversal \n");
+  postorderTraversal(root);
 
-
-
-
-int main(int argc, char* argv[])
-{
-
-
-    #define NUM_THREADS atoi(argv[1])           //Define number of Threads
-    printf("Threads: %d \n", NUM_THREADS);
-
-
-    struct node *root_node = NULL;              //create root
-    root_node = insert_node(root_node, 1);
-
-
-    Pthread_create();                          //
-
-
-
-
-
-
-insert_node(root_node, 10);
-insert_node(root_node, 30);
-insert_node(root_node, 25);
-insert_node(root_node, 36);
-insert_node(root_node, 56);
-insert_node(root_node, 78);
-
-
-
-print(root_node);
-
-return 0;
 }
