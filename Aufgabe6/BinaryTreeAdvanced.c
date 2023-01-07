@@ -2,6 +2,14 @@
 // Datastruct from: https://www.scaler.com/topics/binary-tree-in-c/
 
 #include "BinaryTreeAdvanced.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <assert.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <stdbool.h>
+
 
 // Inorder traversal
 void inorderTraversal(struct node *root)
@@ -80,26 +88,32 @@ void insert(binarytree *b, int value)
 
 node *insertR(node *p, int item)
 {
-    pthread_mutex_lock(&p->lock);
-    if (p == NULL)
-    {
-        create(item);
+  printf("item start: %d\n", item);
+  int changed = 0;
+  pthread_mutex_lock(&p->lock);
+  printf("item: %d\n", item);
+  if (p == NULL)
 
+  {
+     printf("item create: %d\n", item);
+    p = create(item);
+    changed = 1;
+  }
 
-    }
-    else if (item > p->item)
-    {
-        pthread_mutex_unlock(&p->lock);
-        p->right = insertR(p->right, item);
-    }
-    else if (item < p->item)
-    {
-        pthread_mutex_unlock(&p->lock);
-        p->left = insertR(p->left, item);
-    }
+  pthread_mutex_unlock(&p->lock);
 
-    pthread_mutex_unlock(&p->lock);
-    return p;
+  if (item > p->item && changed == 0)
+  {
+    printf("rechts\n");
+    p->right = insertR(p->right, item);
+  }
+  if (item < p->item && changed == 0)
+  {
+    printf("links\n");
+    p->left = insertR(p->left, item);
+  }
+   printf("item finish: %d\n", item);
+  return p;
 }
 /**
  * @brief
@@ -116,6 +130,7 @@ int contains(binarytree *b, int n)
 
 int containsR(node *p, int n)
 {
+
   if (p == NULL)
   {
     return 0;
@@ -163,8 +178,9 @@ int main(int argc, char **argv)
   int threads = 2;
   int options;
   int number = 1000;
+  bool print = 0;
 
-  while ((options = getopt(argc, argv, "p:n:")) != -1)
+  while ((options = getopt(argc, argv, "p:n:c")) != -1)
   {
     switch (options)
     {
@@ -174,6 +190,9 @@ int main(int argc, char **argv)
     case 'n':
       number = atoi(optarg);
       break;
+    case 'c':
+      print = 1;
+      break;
     }
   }
 
@@ -181,6 +200,8 @@ int main(int argc, char **argv)
   printf("CPUs: %ld\n", number_of_processors);
   printf("Threads: %d\n", threads);
   printf("Numbers: %d\n", number);
+  printf("sollte klappen\n");
+
 
   // initialize randomizer
   srand((unsigned int)time(NULL));
@@ -189,6 +210,7 @@ int main(int argc, char **argv)
   {
     numbers[i] = i;
   }
+  printf("klappt immernoch\n");
 
   // Binary Tree inizialisieren
   binarytree *b = malloc(sizeof(binarytree));
@@ -206,6 +228,7 @@ for(int i = 0; i < threads; i++)
   args[i].n = (number / threads) * (i + 1);
 
 }
+  printf("how about this?\n");
 
   struct timeval t1, t2;
   // Threads erstellen
@@ -216,12 +239,14 @@ for(int i = 0; i < threads; i++)
 
     assert(pthread_create(&p[i], NULL, worker, (void *)&args) == 0);
   }
+    printf("hhmmm\n");
 
   for (int i = 0; i < threads; i++)
   {
 
     assert(pthread_join(p[i], NULL) == 0);
   }
+  printf("joooo\n");
   gettimeofday(&t2, NULL);
 
   double time = (t2.tv_sec - t1.tv_sec) * 1000.0;
@@ -229,6 +254,10 @@ for(int i = 0; i < threads; i++)
 
   printf("Elapsed Time: %f ms.\n", time);
 
+  if(print)
+  {
+  inorderTraversal(b->root);
+  }
   // free lock, array, nodes and tree
 
   free(numbers);

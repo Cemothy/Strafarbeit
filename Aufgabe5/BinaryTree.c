@@ -2,6 +2,13 @@
 // Datastruct from: https://www.scaler.com/topics/binary-tree-in-c/
 
 #include "BinaryTree.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <assert.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <stdbool.h>
 
 // Inorder traversal
 void inorderTraversal(struct node *root)
@@ -79,7 +86,7 @@ node *insertR(node *p, int item)
 {
   if (p == NULL)
   {
-    create(item);
+    p = create(item);
   }
   else if (item > p->item)
   {
@@ -154,8 +161,9 @@ int main(int argc, char **argv)
   int threads = 2;
   int options;
   int number = 1000;
+  bool print = 0;
 
-  while ((options = getopt(argc, argv, "p:n:")) != -1)
+  while ((options = getopt(argc, argv, "p:n:c")) != -1)
   {
     switch (options)
     {
@@ -164,6 +172,9 @@ int main(int argc, char **argv)
       break;
     case 'n':
       number = atoi(optarg);
+      break;
+    case 'c':
+      print = 1;
       break;
     }
   }
@@ -219,6 +230,11 @@ for(int i = 0; i < threads; i++)
   time += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
   printf("Elapsed Time: %f ms.\n", time);
+
+  if(print)
+  {
+  inorderTraversal(b->root);
+  }
 
   // free lock, array, nodes and tree
   pthread_mutex_destroy(&b->lock);
