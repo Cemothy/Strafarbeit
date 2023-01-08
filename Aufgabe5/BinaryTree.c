@@ -162,8 +162,9 @@ int main(int argc, char **argv)
   int options;
   int number = 1000;
   bool print = 0;
+  int print_to_file = 0;
 
-  while ((options = getopt(argc, argv, "p:n:c")) != -1)
+  while ((options = getopt(argc, argv, "p:n:c:F:")) != -1)
   {
     switch (options)
     {
@@ -176,6 +177,9 @@ int main(int argc, char **argv)
     case 'c':
       print = 1;
       break;
+    case 'F':
+      print_to_file = 1;
+      printf("ARG print_to_file = %d", print_to_file);
     }
   }
 
@@ -199,15 +203,13 @@ int main(int argc, char **argv)
   // Argumente für Worker in Struct einfügen
   myargs args[threads];
 
-
-for(int i = 0; i < threads; i++)
-{
-  args[i].b = b;
-  args[i].numbers = numbers;
-  args[i].a = (number / threads) * i;
-  args[i].n = (number / threads) * (i + 1);
-
-}
+  for (int i = 0; i < threads; i++)
+  {
+    args[i].b = b;
+    args[i].numbers = numbers;
+    args[i].a = (number / threads) * i;
+    args[i].n = (number / threads) * (i + 1);
+  }
 
   struct timeval t1, t2;
   // Threads erstellen
@@ -232,13 +234,13 @@ for(int i = 0; i < threads; i++)
   printf("Elapsed Time: %f ms.\n", time);
 
   printf("Elapsed Time: %f ms.\n", time);
-	FILE *file = fopen("out.txt", "a");
-	assert(file != NULL);
-	assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
+  FILE *file = fopen("out.txt", "a");
+  assert(file != NULL);
+  assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
 
-  if(print)
+  if (print)
   {
-  inorderTraversal(b->root);
+    inorderTraversal(b->root);
   }
 
   // free lock, array, nodes and tree
