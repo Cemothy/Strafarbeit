@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 typedef struct
 {
@@ -15,6 +16,12 @@ typedef struct
     counter *c;
     long n;
 } myargs;
+
+void arg_init(myargs *a, counter *c, long n)
+{
+    a->c = c;
+    a->n = n;
+}
 
 void init(counter *c)
 {
@@ -51,10 +58,30 @@ void *worker(void *arg)
 
 struct timeval start_time, end_time;
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
-    assert(argc > 2);
-    int threads = atoi(argv[1]);
+    long n = 5;
+    int threads = 4;
+    int opt = 0;
+
+    char *helpstring = "Options:\n-t threads\n-n n\n";
+
+    while ((opt = getopt(argc, argv, "n:t:")) != -1)
+    {
+        switch (opt)
+        {
+        case 'n':
+            n = atoi(optarg);
+            printf("ARG n = %ld\n", n);
+            break;
+        case 't':
+            threads = atoi(optarg);
+            printf("ARG threads = %d\n", threads);
+            break;
+        default:
+            printf("%s", helpstring);
+        }
+    }
 
     counter *c;
     c = malloc(sizeof(counter));
@@ -63,12 +90,10 @@ int main(int argc, char const *argv[])
 
     myargs *arg;
     arg = malloc(sizeof(myargs));
-    arg->c = c;
-    arg->n = atoi(argv[2]);
+    arg_init(arg, c, n);
 
     gettimeofday(&start_time, NULL);
-    long startThreadsec = start_time.tv_sec;
-    long startThreadusec = start_time.tv_usec;
+
     for (int i = 0; i < threads; i++)
     {
         assert(pthread_create(&p[i], NULL, worker, (void *)arg) == 0);
@@ -79,27 +104,26 @@ int main(int argc, char const *argv[])
         assert(pthread_join(p[i], NULL) == 0);
     }
     gettimeofday(&end_time, NULL);
-    long endThreadsec = end_time.tv_sec;
-    long endThreadusec = end_time.tv_usec;
+
+    double time1 = (end_time.tv_sec - start_time.tv_sec) * 1000.0;
+    time1 += (end_time.tv_usec - start_time.tv_usec) / 1000.0;
 
     gettimeofday(&start_time, NULL);
-    long startWorkersec = start_time.tv_sec;
-    long startWorkerusec = start_time.tv_usec;
+
     for (int i = 0; i < threads; i++)
     {
         worker((void *)arg);
     }
     gettimeofday(&end_time, NULL);
-    long endWorkersec = end_time.tv_sec;
-    long endWorkerusec = end_time.tv_usec;
 
     printf("Counter: %d\n\n", get(c));
 
-    printf("Workersec: %lu \n", endWorkersec - startWorkersec);
-    printf("Workerusec: %lu\n\n", endWorkerusec - startWorkerusec);
+    double time2 = (end_time.tv_sec - start_time.tv_sec) * 1000.0;
+    time2 += (end_time.tv_usec - start_time.tv_usec) / 1000.0;
 
-    printf("Threadsec: %lu \n", endThreadsec - startThreadsec);
-    printf("Threadsec: %lu \n", endThreadusec - startThreadusec);
+    printf("Time for %d Worker()-Threads parallel:             %lf\n", threads, time2);
+
+    printf("Time for Executing Worker() %d times subsequently: %lf\n", threads, time1);
 
     free(arg);
     free(c);
