@@ -49,7 +49,8 @@ struct node *create(int value)
   newNode->item = value;
   newNode->left = NULL;
   newNode->right = NULL;
-  assert(pthread_mutex_init(&newNode->lock, NULL) == 0);
+  assert(pthread_mutex_init(&newNode->lockL, NULL) == 0);
+  assert(pthread_mutex_init(&newNode->lockR, NULL) == 0);
 
   return newNode;
 }
@@ -61,7 +62,9 @@ void free_all_nodes(struct node *root)
   free_all_nodes(root->left);
   free_all_nodes(root->right);
   free(root);
-  pthread_mutex_destroy(&root->lock);
+  pthread_mutex_destroy(&root->lockR);
+  pthread_mutex_destroy(&root->lockR);
+
 }
 
 binarytree *create_binary(binarytree *b)
@@ -88,31 +91,44 @@ void insert(binarytree *b, int value)
 
 node *insertR(node *p, int item)
 {
-  printf("item start: %d\n", item);
-  int changed = 0;
-  pthread_mutex_lock(&p->lock);
-  printf("item: %d\n", item);
+  bool changeR = 0;
+  bool changeL = 0;
   if (p == NULL)
-
   {
-     printf("item create: %d\n", item);
     p = create(item);
-    changed = 1;
   }
 
-  pthread_mutex_unlock(&p->lock);
-
-  if (item > p->item && changed == 0)
+  if (item > p->item)
   {
-    printf("rechts\n");
+    if(p->right == NULL)
+    {
+      pthread_mutex_lock(&p->lockR);
+      changeR = 1;
+    }
+
     p->right = insertR(p->right, item);
+
+    if(changeR == 1)
+    {
+      pthread_mutex_unlock(&p->lockR);
+    }
+
   }
-  if (item < p->item && changed == 0)
+  else if (item < p->item)
   {
-    printf("links\n");
+    if(p->right == NULL)
+    {
+      pthread_mutex_lock(&p->lockL);
+      changeL = 1;
+    }
+
     p->left = insertR(p->left, item);
+
+    if(changeL == 1)
+    {
+      pthread_mutex_unlock(&p->lockL);
+    }
   }
-   printf("item finish: %d\n", item);
   return p;
 }
 /**
@@ -200,8 +216,6 @@ int main(int argc, char **argv)
   printf("CPUs: %ld\n", number_of_processors);
   printf("Threads: %d\n", threads);
   printf("Numbers: %d\n", number);
-  printf("sollte klappen\n");
-
 
   // initialize randomizer
   srand((unsigned int)time(NULL));
@@ -210,7 +224,6 @@ int main(int argc, char **argv)
   {
     numbers[i] = i;
   }
-  printf("klappt immernoch\n");
 
   // Binary Tree inizialisieren
   binarytree *b = malloc(sizeof(binarytree));
@@ -228,7 +241,6 @@ for(int i = 0; i < threads; i++)
   args[i].n = (number / threads) * (i + 1);
 
 }
-  printf("how about this?\n");
 
   struct timeval t1, t2;
   // Threads erstellen
@@ -236,17 +248,14 @@ for(int i = 0; i < threads; i++)
   gettimeofday(&t1, NULL);
   for (int i = 0; i < threads; i++)
   {
-
-    assert(pthread_create(&p[i], NULL, worker, (void *)&args) == 0);
+    assert(pthread_create(&p[i], NULL, worker, (void *)&args[i]) == 0);  //wichtig args mit [i]!!
   }
-    printf("hhmmm\n");
 
   for (int i = 0; i < threads; i++)
   {
 
     assert(pthread_join(p[i], NULL) == 0);
   }
-  printf("joooo\n");
   gettimeofday(&t2, NULL);
 
   double time = (t2.tv_sec - t1.tv_sec) * 1000.0;

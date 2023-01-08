@@ -1,16 +1,19 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <assert.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdbool.h>
 
 
 struct node {
     int item;
     struct node* left;
     struct node* right;
-    pthread_mutex_t lock;
+    pthread_mutex_t lockL;
+    pthread_mutex_t lockR;
 };
 
 typedef struct node node;
