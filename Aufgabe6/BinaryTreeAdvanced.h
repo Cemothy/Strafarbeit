@@ -39,7 +39,7 @@ struct node* create(int value);
 binarytree *create_binary(binarytree* b);
 void insert(binarytree* b, int value);
 
-node *insertR(node *p, int value);
+void insertR(node *p, int value);
 
 int contains(binarytree *b, int n);
 int containsR(node *p, int n);
