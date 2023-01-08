@@ -102,11 +102,12 @@ int main(int argc, char *argv[])
     int threshold = 5;
     int inc_amnt = 1;
     int count_limit = 1000;
+    int print_to_file = 0;
     printf("ENV: number_cpus = %d\n", number_cpus);
 
     int opt = 0;
     char *helptext = "Options:\n-t number_threads\n-T threshold\n-h Help\n-l count_limit";
-    while ((opt = getopt(argc, argv, "h:t:T:a:l:")) != -1)
+    while ((opt = getopt(argc, argv, "h:t:T:a:l:F:")) != -1)
     {
         switch (opt)
         {
@@ -126,6 +127,17 @@ int main(int argc, char *argv[])
             break;
         case 'h':
             printf("%s", helptext);
+            break;
+        case 'F':
+            print_to_file = atoi(optarg);
+            // printf("ARG print_to_file = %d\n", print_to_file);
+            if (print_to_file == 2)
+            {
+                FILE *file = fopen("out.csv", "a");
+                assert(file != NULL);
+                assert(0 < fprintf(file, "number_threads, threshold, inc_amnt, time\n"));
+                return 0;
+            }
             break;
         default:
             printf("%s", helptext);
@@ -158,8 +170,17 @@ int main(int argc, char *argv[])
 
     double time = (t1.tv_sec - t0.tv_sec) * 1000.0;
     time += (t1.tv_usec - t0.tv_usec) / 1000.0;
-
-    printf("\nElapsed Time: %lf ms\n", time);
+    if (print_to_file == 0)
+    {
+        printf("\nElapsed Time: %lf ms\n", time);
+    }
+    else
+    {
+        FILE *file = fopen("out.csv", "a");
+        assert(file != NULL);
+        assert(0 < fprintf(file, "%d, %d, %d, %lf\n", number_threads, threshold, inc_amnt, time));
+        assert(fclose(file) == 0);
+    }
 
     counter_delete(c);
     free(threads);

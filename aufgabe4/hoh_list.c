@@ -53,6 +53,7 @@ node *list_add(node *head, int *val)
     }
     else if (*head->value < *val)
     {
+        pthread_mutex_unlock(&head->lock);
         head->next = list_add(head->next, val);
     }
     else if (*head->value > *val)
@@ -231,5 +232,7 @@ int main(int argc, char *argv[])
 
     list_postorder_trav(head, node_del);
     free(numbers);
+    free(threads);
+    free(args);
     return 0;
 }
