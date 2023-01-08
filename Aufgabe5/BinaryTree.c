@@ -178,15 +178,18 @@ int main(int argc, char **argv)
       print = 1;
       break;
     case 'F':
-      print_to_file = 1;
-      printf("ARG print_to_file = %d", print_to_file);
+      print_to_file = atoi(optarg);
+      printf("ARG print_to_file = %d\n", print_to_file);
     }
   }
 
   // Ausgeben der Parameter
-  printf("CPUs: %ld\n", number_of_processors);
-  printf("Threads: %d\n", threads);
-  printf("Numbers: %d\n", number);
+  if (print_to_file == 0)
+  {
+    printf("CPUs: %ld\n", number_of_processors);
+    printf("Threads: %d\n", threads);
+    printf("Numbers: %d\n", number);
+  }
 
   // initialize randomizer
   srand((unsigned int)time(NULL));
@@ -231,12 +234,18 @@ int main(int argc, char **argv)
   double time = (t2.tv_sec - t1.tv_sec) * 1000.0;
   time += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-  printf("Elapsed Time: %f ms.\n", time);
+  if (print_to_file == 0)
+  {
+    printf("Elapsed Time: %f ms.\n", time);
 
-  printf("Elapsed Time: %f ms.\n", time);
-  FILE *file = fopen("out.txt", "a");
-  assert(file != NULL);
-  assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
+    printf("Elapsed Time: %f ms.\n", time);
+  }
+  else
+  {
+    FILE *file = fopen("out.csv", "a");
+    assert(file != NULL);
+    assert(0 < fprintf(file, "%d, %d, %f;\n", threads, number, time));
+  }
 
   if (print)
   {
