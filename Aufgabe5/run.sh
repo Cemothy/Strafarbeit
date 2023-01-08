@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo off
 
 make clean
 make

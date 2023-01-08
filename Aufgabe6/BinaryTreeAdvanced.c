@@ -9,8 +9,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdbool.h>
-#include "supportLib.h"
-#include "pbPlots.h"
 
 // Inorder traversal
 void inorderTraversal(struct node *root)
@@ -180,8 +178,9 @@ int main(int argc, char **argv)
 	int options;
 	int number = 1000;
 	bool print = 0;
+	int print_to_file = 0;
 
-	while ((options = getopt(argc, argv, "p:n:c")) != -1)
+	while ((options = getopt(argc, argv, "p:n:c:F:")) != -1)
 	{
 		switch (options)
 		{
@@ -194,13 +193,26 @@ int main(int argc, char **argv)
 		case 'c':
 			print = 1;
 			break;
+		case 'F':
+			print_to_file = atoi(optarg);
+			if (print_to_file == 2)
+			{
+				FILE *file = fopen("out.csv", "a");
+				assert(file != NULL);
+				assert(0 < fprintf(file, "number, time\n"));
+				fclose(file);
+			}
+			break;
 		}
 	}
 
 	// Ausgeben der Parameter
-	printf("CPUs: %ld\n", number_of_processors);
-	printf("Threads: %d\n", threads);
-	printf("Numbers: %d\n", number);
+	if (print_to_file == 0)
+	{
+		printf("CPUs: %ld\n", number_of_processors);
+		printf("Threads: %d\n", threads);
+		printf("Numbers: %d\n", number);
+	}
 
 	// initialize randomizer
 	srand((unsigned int)time(NULL));
@@ -244,13 +256,24 @@ int main(int argc, char **argv)
 	double time = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	time += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-	printf("Elapsed Time: %f ms.\n", time);
-	FILE *file = fopen("out.txt", "a");
-	assert(file != NULL);
-	assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
-	fclose(file);
+	if (print_to_file == 0)
+	{
+		printf("Elapsed Time: %f ms.\n", time);
+		FILE *file = fopen("out.txt", "a");
+		assert(file != NULL);
+		assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
+		fclose(file);
+	}
+	else
+	{
 
-	//Plot
+		FILE *file = fopen("out.csv", "a");
+		assert(file != NULL);
+		assert(0 < fprintf(file, "%d, %f;\n", number, time));
+		fclose(file);
+	}
+
+	// Plot
 	/*
 	double x [] = {100, 1000, 10000, 100000};  //numbers
 	double y [] = {0,10,100,1000}; // elapsed time
@@ -263,7 +286,7 @@ int main(int argc, char **argv)
 	double *pngData = ConvertToPNG(&length, imageRef->image);
 	WriteToFile(pngData, length, "plot.png");
 	*/
-	//End Plot
+	// End Plot
 
 	if (print)
 	{

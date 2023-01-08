@@ -38,3 +38,13 @@ Number: 2000	 Elapsed Time: 19.951000
 Number: 2000	 Elapsed Time: 37.948000
 
 /5 =
+Number: 4000	 Elapsed Time: 17.180000
+Number: 4000	 Elapsed Time: 5.913000
+Number: 4000	 Elapsed Time: 4.166000
+Number: 4000	 Elapsed Time: 3.215000
+Number: 4000	 Elapsed Time: 3.758000
+Number: 100	 Elapsed Time: 0.449000
+Number: 1000	 Elapsed Time: 1.148000
+Number: 2000	 Elapsed Time: 2.063000
+Number: 3000	 Elapsed Time: 3.271000
+Number: 4000	 Elapsed Time: 5.744000
