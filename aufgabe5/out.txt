@@ -1,0 +1,1 @@
+Number: 100	 Elapsed Time: 1.048000

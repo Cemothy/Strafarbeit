@@ -1,0 +1,40 @@
+Number: 10	 Elapsed Time: 0.740000
+Number: 10	 Elapsed Time: 2.370000
+Number: 10	 Elapsed Time: 0.640000
+Number: 10	 Elapsed Time: 0.665000
+Number: 10	 Elapsed Time: 1.027000
+/5 = 1,0874
+
+Number: 100	 Elapsed Time: 2.344000
+Number: 100	 Elapsed Time: 0.915000
+Number: 100	 Elapsed Time: 0.739000
+Number: 100	 Elapsed Time: 1.168000
+Number: 100	 Elapsed Time: 0.910000
+/5 = 1,2152
+Number: 1000	 Elapsed Time: 3.896000
+Number: 1000	 Elapsed Time: 4.333000
+Number: 1000	 Elapsed Time: 7.563000
+Number: 1000	 Elapsed Time: 8.039000
+Number: 1000	 Elapsed Time: 7.189000
+/5 = 6,204
+Number: 10000	 Elapsed Time: 197.537000
+Number: 10000	 Elapsed Time: 181.179000
+Number: 10000	 Elapsed Time: 198.643000
+Number: 10000	 Elapsed Time: 189.488000
+Number: 10000	 Elapsed Time: 157.886000
+/5 = 184,9466
+
+Number: 100000	 Elapsed Time: 13344.685000
+Number: 100000	 Elapsed Time: 13607.614000
+Number: 100000	 Elapsed Time: 13698.297000
+Number: 100000	 Elapsed Time: 13667.456000
+Number: 100000	 Elapsed Time: 13777.557000
+/5 = 13618,657Number: 1000	 Elapsed Time: 4.985000
+
+Number: 2000	 Elapsed Time: 16.738000
+Number: 2000	 Elapsed Time: 20.063000
+Number: 2000	 Elapsed Time: 15.807000
+Number: 2000	 Elapsed Time: 19.951000
+Number: 2000	 Elapsed Time: 37.948000
+
+/5 =

@@ -231,6 +231,11 @@ for(int i = 0; i < threads; i++)
 
   printf("Elapsed Time: %f ms.\n", time);
 
+  printf("Elapsed Time: %f ms.\n", time);
+	FILE *file = fopen("out.txt", "a");
+	assert(file != NULL);
+	assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
+
   if(print)
   {
   inorderTraversal(b->root);

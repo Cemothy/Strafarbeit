@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdbool.h>
+#include "supportLib.h"
+#include "pbPlots.h"
 
 // Inorder traversal
 void inorderTraversal(struct node *root)
@@ -174,7 +176,7 @@ int main(int argc, char **argv)
 
 	// Parameter Eingabe
 	long number_of_processors = sysconf(_SC_NPROCESSORS_ONLN);
-	int threads = 2;
+	int threads = 4;
 	int options;
 	int number = 1000;
 	bool print = 0;
@@ -243,6 +245,25 @@ int main(int argc, char **argv)
 	time += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
 	printf("Elapsed Time: %f ms.\n", time);
+	FILE *file = fopen("out.txt", "a");
+	assert(file != NULL);
+	assert(0 < fprintf(file, "Number: %d\t Elapsed Time: %f\n", number, time));
+	fclose(file);
+
+	//Plot
+	/*
+	double x [] = {100, 1000, 10000, 100000};  //numbers
+	double y [] = {0,10,100,1000}; // elapsed time
+
+	RGBABitmapImageReference *imageRef = CreateRGBABitmapImageReference();
+
+	DrawScatterPlot(imageRef, 600, 400, x, 4, y, 4, NULL);
+
+	size_t length;
+	double *pngData = ConvertToPNG(&length, imageRef->image);
+	WriteToFile(pngData, length, "plot.png");
+	*/
+	//End Plot
 
 	if (print)
 	{
